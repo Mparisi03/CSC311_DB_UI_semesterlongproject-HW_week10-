@@ -2,6 +2,7 @@ package viewmodel;
 
 import dao.DbConnectivityClass;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -28,7 +29,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class DB_GUI_Controller implements Initializable {
-
+    @FXML
+    private Button edit;
     @FXML
     TextField first_name, last_name, department, major, email, imageURL;
     @FXML
@@ -46,6 +48,21 @@ public class DB_GUI_Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        edit.disableProperty().bind(Bindings.createBooleanBinding(() ->
+                   !isfnNull()||
+                           !islnNull()||
+                           !isdepNull()||
+                           !isemailNull()||
+                           !ismajNull()||
+                           !isimageURLNull(),
+                first_name.textProperty(),
+                last_name.textProperty(),
+                department.textProperty(),
+                major.textProperty(),
+                email.textProperty(),
+                imageURL.textProperty()
+
+                ));
         try {
             tv_id.setCellValueFactory(new PropertyValueFactory<>("id"));
             tv_fn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
@@ -58,6 +75,50 @@ public class DB_GUI_Controller implements Initializable {
             throw new RuntimeException(e);
         }
     }
+
+    protected boolean isfnNull(){
+        if(first_name.getText() != null){
+            return true;
+
+        }
+        else
+            return false;
+
+    }
+    protected boolean islnNull(){
+        if(last_name.getText() != null){
+            return true;
+        }
+        else
+            return false;
+    }
+    protected boolean isdepNull(){
+        if(department.getText() != null){
+            return true;
+        }else
+            return false;
+    }
+    protected boolean ismajNull(){
+        if(major.getText() != null){
+            return true;
+        }else
+            return false;
+    }
+    protected boolean isemailNull(){
+        if(email.getText() != null){
+            return true;
+        }
+        else return false;
+    }
+
+    protected boolean isimageURLNull(){
+        if(imageURL.getText() != null){
+            return true;
+        }
+        else return false;
+    }
+
+
 
     @FXML
     protected void addNewRecord() {
@@ -116,6 +177,8 @@ public class DB_GUI_Controller implements Initializable {
 
     @FXML
     protected void editRecord() {
+
+
         Person p = tv.getSelectionModel().getSelectedItem();
         int index = data.indexOf(p);
         Person p2 = new Person(index + 1, first_name.getText(), last_name.getText(), department.getText(),
