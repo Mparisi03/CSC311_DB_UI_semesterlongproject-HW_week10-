@@ -30,7 +30,31 @@ import java.util.ResourceBundle;
 
 public class DB_GUI_Controller implements Initializable {
     @FXML
-    private Button edit;
+    private Button DeleteBtn;
+    @FXML
+    private Button addBtn;
+    @FXML
+    private Button editBtn;
+
+    @FXML
+    private MenuItem ChangePic;
+
+    @FXML
+    private MenuItem ClearItem;
+
+    @FXML
+    private MenuItem CopyItem;
+
+    @FXML
+    private MenuItem editItem;
+
+    @FXML
+    private MenuItem logOut;
+
+    @FXML
+    private MenuItem newItem;
+
+
     @FXML
     TextField first_name, last_name, department, major, email, imageURL;
     @FXML
@@ -48,21 +72,22 @@ public class DB_GUI_Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        edit.disableProperty().bind(Bindings.createBooleanBinding(() ->
-                   !isfnNull()||
-                           !islnNull()||
-                           !isdepNull()||
-                           !isemailNull()||
-                           !ismajNull()||
-                           !isimageURLNull(),
+        editBtn.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+        DeleteBtn.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+
+        addBtn.disableProperty().bind(Bindings.createBooleanBinding(() ->
+                first_name.getText().isEmpty()||
+                last_name.getText().isEmpty()||
+                department.getText().isEmpty()||
+                major.getText().isEmpty()||
+                email.getText().isEmpty(),
                 first_name.textProperty(),
                 last_name.textProperty(),
                 department.textProperty(),
                 major.textProperty(),
-                email.textProperty(),
-                imageURL.textProperty()
-
+                email.textProperty()
                 ));
+
         try {
             tv_id.setCellValueFactory(new PropertyValueFactory<>("id"));
             tv_fn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
@@ -76,52 +101,28 @@ public class DB_GUI_Controller implements Initializable {
         }
     }
 
-    protected boolean isfnNull(){
-        if(first_name.getText() != null){
-            return true;
+   protected boolean isVaild(){
+        return !first_name.getText().isEmpty() &&
+                !last_name.getText().isEmpty() &&
+                !department.getText().isEmpty() &&
+                !major.getText().isEmpty() &&
+                !email.getText().isEmpty();
+   }
 
-        }
-        else
-            return false;
-
-    }
-    protected boolean islnNull(){
-        if(last_name.getText() != null){
-            return true;
-        }
-        else
-            return false;
-    }
-    protected boolean isdepNull(){
-        if(department.getText() != null){
-            return true;
-        }else
-            return false;
-    }
-    protected boolean ismajNull(){
-        if(major.getText() != null){
-            return true;
-        }else
-            return false;
-    }
-    protected boolean isemailNull(){
-        if(email.getText() != null){
-            return true;
-        }
-        else return false;
-    }
-
-    protected boolean isimageURLNull(){
-        if(imageURL.getText() != null){
-            return true;
-        }
-        else return false;
-    }
-
-
+   private void configMenu(){
+      ChangePic.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+      ClearItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+      CopyItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+      editItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+      logOut.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+      newItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+   }
 
     @FXML
     protected void addNewRecord() {
+        if(!isVaild()){
+            System.out.println("Plase fill out all flieds");
+        }else {
 
             Person p = new Person(first_name.getText(), last_name.getText(), department.getText(),
                     major.getText(), email.getText(), imageURL.getText());
@@ -130,6 +131,7 @@ public class DB_GUI_Controller implements Initializable {
             p.setId(cnUtil.retrieveId(p));
             data.add(p);
             clearForm();
+        }
 
     }
 
