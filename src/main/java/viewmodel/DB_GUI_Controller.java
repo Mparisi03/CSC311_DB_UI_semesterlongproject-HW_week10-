@@ -43,26 +43,20 @@ public class DB_GUI_Controller implements Initializable {
     private Button addBtn;
     @FXML
     private Button editBtn;
-
     @FXML
     private MenuItem ChangePic;
-
     @FXML
     private MenuItem ClearItem;
-
     @FXML
     private MenuItem CopyItem;
-
     @FXML
     private MenuItem editItem;
-
     @FXML
     private MenuItem logOut;
-
     @FXML
     private MenuItem newItem;
-
-
+    @FXML
+    private Label StautsProg;
     @FXML
     private ComboBox<sele_major> Major;
 
@@ -169,7 +163,7 @@ public class DB_GUI_Controller implements Initializable {
     @FXML
     protected void addNewRecord() {
         if(!isVaild()){
-            System.out.println("Plase fill out all flieds propley");
+            StautsProg.setText("Plase fill out all flieds propley");
         }else {
 
             Person p = new Person(first_name.getText(), last_name.getText(), department.getText(),
@@ -179,6 +173,8 @@ public class DB_GUI_Controller implements Initializable {
             p.setId(cnUtil.retrieveId(p));
             data.add(p);
             clearForm();
+
+            StautsProg.setText("A new user was inserted successfully.");
         }
 
     }
@@ -191,6 +187,7 @@ public class DB_GUI_Controller implements Initializable {
         Major.getSelectionModel().clearSelection();
         email.setText("");
         imageURL.setText("");
+        StautsProg.setText("A user was clear successfully.");
     }
 
     @FXML
@@ -237,6 +234,7 @@ public class DB_GUI_Controller implements Initializable {
         data.remove(p);
         data.add(index, p2);
         tv.getSelectionModel().select(index);
+        StautsProg.setText("A user was edited successfully.");
     }
 
     @FXML
@@ -246,6 +244,7 @@ public class DB_GUI_Controller implements Initializable {
         cnUtil.deleteRecord(p);
         data.remove(index);
         tv.getSelectionModel().select(index);
+        StautsProg.setText("A user was deleted successfully.");
     }
 
     @FXML
@@ -354,7 +353,7 @@ public class DB_GUI_Controller implements Initializable {
         });
     }
 
-    private static enum Major {Business, CSC, CPIS}
+   // private static enum Major {Business, CSC, CPIS}
 
     private static class Results {
 

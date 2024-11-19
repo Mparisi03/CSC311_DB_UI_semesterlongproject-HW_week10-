@@ -60,7 +60,11 @@
     -fx-background-color: black;
     -fx-text-fill: white;
 }
+.Label {
+    -fx-background-color: black;
+    -fx-font-weight: bold;
 
+}
 
 
 .image_view{
