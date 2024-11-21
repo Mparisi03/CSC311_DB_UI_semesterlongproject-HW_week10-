@@ -25,16 +25,25 @@ public class UserSession {
 
 
 
-    public static UserSession getInstace(String userName,String password, String privileges) {
+    public static UserSession  getInstace(String userName,String password, String privileges) {
         if(instance == null) {
-            instance = new UserSession(userName, password, privileges);
+            synchronized(UserSession.class) {
+                if(instance == null) {
+                    instance = new UserSession(userName,password,privileges);
+                }
+            }
+
         }
         return instance;
     }
 
     public static UserSession getInstace(String userName,String password) {
         if(instance == null) {
-            instance = new UserSession(userName, password, "NONE");
+            synchronized(UserSession.class) {
+                if(instance == null) {
+                    instance = new UserSession(userName,password,"NONE");
+                }
+            }
         }
         return instance;
     }
@@ -50,14 +59,14 @@ public class UserSession {
         return this.privileges;
     }
 
-    public void cleanUserSession() {
+    public synchronized void cleanUserSession() {
         this.userName = "";// or null
         this.password = "";
         this.privileges = "";// or null
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "UserSession{" +
                 "userName='" + this.userName + '\'' +
                 ", privileges=" + this.privileges +
