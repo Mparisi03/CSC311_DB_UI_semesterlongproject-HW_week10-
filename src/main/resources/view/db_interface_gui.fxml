@@ -47,8 +47,8 @@
                         </Menu>
                   <Menu fx:id="CVSMenu" mnemonicParsing="false" styleClass="menu_options" text="CVS">
                      <items>
-                        <MenuItem fx:id="Import" mnemonicParsing="false" styleClass="menu_items" text="Import_File" />
-                        <MenuItem fx:id="Export" mnemonicParsing="false" styleClass="menu_items" text="Export_File" />
+                        <MenuItem fx:id="Import" mnemonicParsing="false" onAction="#ImportFlie" styleClass="menu_items" text="Import_File" />
+                        <MenuItem fx:id="Export" mnemonicParsing="false" onAction="#ExportFile" styleClass="menu_items" text="Export_File" />
                      </items>
                   </Menu>
                         <Menu fx:id="helpMenu" mnemonicParsing="false" styleClass="menu_options" text="Help">

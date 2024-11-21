@@ -24,12 +24,16 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Person;
 import service.MyLogger;
-
+import javax.swing.JFileChooser;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
+import java.io.FileReader;
+
+import javax.swing.*;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -38,29 +42,13 @@ import java.util.regex.Pattern;
 public class DB_GUI_Controller implements Initializable {
     StorageUploader store = new StorageUploader();
     @FXML
-    private Button DeleteBtn;
+    private Button DeleteBtn,addBtn,editBtn;
     @FXML
-    private Button addBtn;
-    @FXML
-    private Button editBtn;
-    @FXML
-    private MenuItem ChangePic;
-    @FXML
-    private MenuItem ClearItem;
-    @FXML
-    private MenuItem CopyItem;
-    @FXML
-    private MenuItem editItem;
-    @FXML
-    private MenuItem logOut;
-    @FXML
-    private MenuItem newItem;
+    private MenuItem ChangePic,ClearItem,CopyItem,editItem,logOut,newItem,Import,Export;
     @FXML
     private Label StautsProg;
     @FXML
     private ComboBox<sele_major> Major;
-
-
     @FXML
     TextField first_name, last_name, department, email, imageURL;
     @FXML
@@ -71,6 +59,7 @@ public class DB_GUI_Controller implements Initializable {
     private TableView<Person> tv;
     @FXML
     private TableColumn<Person, Integer> tv_id;
+
     @FXML
     private TableColumn<Person, String> tv_fn, tv_ln, tv_department, tv_major, tv_email;
     private final DbConnectivityClass cnUtil = new DbConnectivityClass();
@@ -367,6 +356,73 @@ public class DB_GUI_Controller implements Initializable {
             this.major = venue;
         }
     }
+
+    @FXML
+    void ExportFile(ActionEvent event) {
+
+        if(event.getSource()==Export){
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save CVS file");
+            int response = fileChooser.showOpenDialog(null);
+
+            if(response == JFileChooser.APPROVE_OPTION){
+                File file = new File(fileChooser.getSelectedFile().getAbsolutePath() +".cvs");
+                if(file != null){
+                    ExportCVS(file);
+                }
+            }
+        }
+    }
+
+    @FXML
+    void ImportFlie(ActionEvent event) {
+
+        if(event.getSource()==Import) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Choose CVS file");
+            int response = fileChooser.showOpenDialog(null); // select file to open
+
+            if(response == JFileChooser.APPROVE_OPTION) {
+                File file = new File(fileChooser.getSelectedFile().getAbsolutePath()+ ".cvs");
+                System.out.println(file);
+                if(file != null) {
+                    ImportCVS(file);
+                }
+            }
+        }
+    }
+
+    public void ImportCVS(File file)  {
+        try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while((line = br.readLine()) !=null){
+                String[] split = line.split(",");
+                System.out.println("Read file" + String.join(",", split));
+
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void ExportCVS(File file)  {
+        try(BufferedWriter wr = new BufferedWriter(new FileWriter(file))) {
+            wr.write("First name, Last name, email\n" +
+                    "Major, Department");
+            wr.newLine();
+
+            for(Person person : data){
+                wr.write(person.getFirstName() + ", "+ person.getLastName()+ ", "+ person.getDepartment()+ ", "+
+                        person.getMajor()+ ", "+ person.getEmail());
+                wr.newLine();
+            }
+            }
+
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private Task<Void> createUploadTask(File file, ProgressBar progressBar) {
         return new Task<>() {
