@@ -11,8 +11,8 @@ public class DbConnectivityClass {
         MyLogger lg= new MyLogger();
         final static String SQL_SERVER_URL = "jdbc:mysql://csc311parisisever.mysql.database.azure.com";//update this server name
         public final static String DB_URL = SQL_SERVER_URL+"/"+DB_NAME;//update this database name
-        public final static String USERNAME = "";// update this username
-        public final static String PASSWORD = "!";// update this password
+        public final static String USERNAME = "csc311admin";// update this username
+        public final static String PASSWORD = "Qwertyuiop!";// update this password
 
 
         private final ObservableList<Person> data = FXCollections.observableArrayList();

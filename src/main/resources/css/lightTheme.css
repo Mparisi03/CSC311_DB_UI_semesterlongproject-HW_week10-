@@ -1,5 +1,5 @@
 .db_btn {
-    -fx-background-color: #a73;
+    -fx-background-color: #dbdbdb;
     -fx-cursor: hand;
     -fx-font-family: "Arial";
     -fx-font-size: 15px;
@@ -12,7 +12,7 @@
 }
 
 .left_pane {
-    -fx-background-color: #a73;
+    -fx-background-color: #694b3d;
     -fx-pref-width: 130px;
     -fx-pref-height: 600px;
 }
@@ -28,7 +28,8 @@
 
 
 .menu_bar {
-    -fx-background-color: #841;
+    -fx-background-color: #ff9c9c;
+
 }
 
 .anchor_pane {
@@ -36,7 +37,7 @@
 }
 
 .text_field_pane {
-    -fx-background-color: #79dc05;
+    -fx-background-color: #694b3d;
 
 }
 
@@ -108,5 +109,11 @@
     -fx-background-color:derive( #FFFFFF,90%);
 	-fx-background-insets: 1, 0, 0;
 	-fx-background-radius: 2em;
+
+}
+/*editing StautsProg text*/
+#StautsProg{
+    -fx-font-weight: 20;
+    -fx-text-fill:dbdbdb;
 
 }
