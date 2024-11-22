@@ -1,17 +1,23 @@
 package service;
 
+import dao.DbConnectivityClass;
+import model.Person;
+
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
 public class UserSession {
 
     private static UserSession instance;
-
     private String userName;
-
     private String password;
     private String privileges;
+
+    private Person user;
 
     private UserSession(String userName, String password, String privileges) {
         this.userName = userName;
@@ -25,7 +31,7 @@ public class UserSession {
 
 
 
-    public static UserSession  getInstace(String userName,String password, String privileges) {
+    public static UserSession getInstace(String userName,String password, String privileges) {
         if(instance == null) {
             synchronized(UserSession.class) {
                 if(instance == null) {
@@ -47,6 +53,21 @@ public class UserSession {
         }
         return instance;
     }
+
+    private static List<String> registeredUsers = new ArrayList<>();
+
+    // Method to check if a user exists in the current session or collection
+    public static boolean checkUserExistsInSession(String username) {
+        return registeredUsers.contains(username);
+    }
+    public void setCurrentUser(Person person) {
+        this.user = person;
+    }
+
+    public Person getCurrentUser() {
+        return this.user;
+    }
+
     public String getUserName() {
         return this.userName;
     }
@@ -72,4 +93,32 @@ public class UserSession {
                 ", privileges=" + this.privileges +
                 '}';
     }
+
+    public static boolean isUserExists(String username) {
+        boolean exists = false;
+        String dbUrl = "jdbc:mysql://your_server_url/your_database";
+        String dbUsername = "your_db_username";
+        String dbPassword = "your_db_password";
+
+        try (Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next() && rs.getInt(1) > 0) {
+                exists = true;
+            }
+
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return exists;
+    }
+
 }
+
+
+

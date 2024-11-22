@@ -1,11 +1,9 @@
 package viewmodel;
-
 import dao.DbConnectivityClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -14,15 +12,10 @@ import javafx.stage.Stage;
 import model.Person;
 import service.UserSession;
 
-import java.sql.*;
-
-import static java.nio.file.Files.exists;
-
-
 public class SignUpController {
 
     @FXML
-    private TextField comfirm_password;
+    private TextField confirm_password;
 
     @FXML
     private Button goBackBtn;
@@ -33,44 +26,40 @@ public class SignUpController {
     @FXML
     private TextField password;
 
-    private DbConnectivityClass dbConnectivityClass = new DbConnectivityClass();
-
     @FXML
     private TextField username;
+
+    private DbConnectivityClass dbConnectivityClass = new DbConnectivityClass();
+
     public void createNewAccount(ActionEvent actionEvent) {
         String un = this.username.getText();
-        String comfirmpass = this.comfirm_password.getText();
+        String confirmPass = this.confirm_password.getText();
         String pass = this.password.getText();
 
-        if(un.isEmpty() || comfirmpass.isEmpty() || pass.isEmpty()) {
-            showAlert("Empty"," username/password can't be empty ");
-        } else if (!pass.equals(comfirmpass)) {
-            showAlert("not equal"," passwords does not match ");
-
+         //checks if empty
+        if (un.isEmpty() || confirmPass.isEmpty() || pass.isEmpty()) {
+            showAlert("Empty", "Username/password can't be empty");
+            //check if password and confirmPass are the same
+        } else if (!pass.equals(confirmPass)) {
+            showAlert("Mismatch", "Passwords do not match");
+        } else if (userExists(un)) {
+            showAlert("Exists", "Username already exists");
         } else {
-            if(userExists(un,pass)){
-                showAlert("Username already exists"," username already exists ");
+            // Create a Person object for the new user, if all pass
+            Person newUser = new Person(un, "", "", "", un, "");  // Assuming only username and email are needed at signup
+            UserSession session = UserSession.getInstace(un,pass,"N/A");
+            session.setCurrentUser(newUser);  // Store the user in the session
 
-            }else {
-                UserSession session = UserSession.getInstace(un, pass, "user");
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Success");
-                alert.setHeaderText(null);
-                alert.setContentText("New account created");
-            }
+            // Call method to save user data to the database
+            saveUserToDatabase(un, pass);
+
+            // Show success message
+            showAlert("Success", "New account created");
         }
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText("Info for the user. Message goes here");
-        alert.showAndWait();
-    }
-
-    public void goBack(ActionEvent actionEvent) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
-            Scene scene = new Scene(root, 900, 600);
-            scene.getStylesheets().add(getClass().getResource("/css/lightTheme.css").toExternalForm());
+            // Navigate back to login screen
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Scene scene = new Scene(FXMLLoader.load(getClass().getResource("/view/login.fxml")), 900, 600);
             window.setScene(scene);
             window.show();
         } catch (Exception e) {
@@ -78,25 +67,38 @@ public class SignUpController {
         }
 
     }
+
+    public void goBack(ActionEvent actionEvent) {
+        try {
+            // Navigate back to login screen
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Scene scene = new Scene(FXMLLoader.load(getClass().getResource("/view/login.fxml")), 900, 600);
+            window.setScene(scene);
+            window.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
-
-
     }
-    private static boolean userExists(String username, String password) {
-        Boolean exists = false;
 
-        UserSession session = UserSession.getInstace(username, password);
-
-        // Check if the session exists (if session is created)
-        if (session != null && session.getUserName().equals(username) && session.getPassword().equals(password)) {
-            exists = true;  // If the session exists with the given credentials
+    private boolean userExists(String username) {
+        if (UserSession.checkUserExistsInSession(username)) {
+            return true; // User exists in session
         }
+        return false; //return false if not
+    }
 
-        return exists;
+    private void saveUserToDatabase(String username, String password) {
+        // Create a new Person object with the user data
+        Person newUser = new Person(0, username, password, "default_department", "default_major", username + "@example.com", "");
+        // Save to the database
+        dbConnectivityClass.insertUser(newUser);
     }
 }
