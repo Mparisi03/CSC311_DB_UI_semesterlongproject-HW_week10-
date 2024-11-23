@@ -42,9 +42,13 @@ public class SignUpController {
             //check if password and confirmPass are the same
         } else if (!pass.equals(confirmPass)) {
             showAlert("Mismatch", "Passwords do not match");
-        } else if (userExists(un)) {
+        } if (userExists(un)) {
             showAlert("Exists", "Username already exists");
+            return; // Return early if user already exists
         } else {
+
+
+
             // Create a Person object for the new user, if all pass
             Person newUser = new Person(un, "", "", "", un, "");  // Assuming only username and email are needed at signup
             UserSession session = UserSession.getInstace(un, pass, "N/A");

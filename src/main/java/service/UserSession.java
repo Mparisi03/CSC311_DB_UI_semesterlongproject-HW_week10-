@@ -96,9 +96,9 @@ public class UserSession {
 
     public static boolean isUserExists(String username) {
         boolean exists = false;
-        String dbUrl = "jdbc:mysql://your_server_url/your_database";
-        String dbUsername = "your_db_username";
-        String dbPassword = "your_db_password";
+        String dbUrl = "jdbc:mysql://csc311parisisever.mysql.database.azure.com";
+        String dbUsername = "csc311admin";
+        String dbPassword = "Qwertyuiop!";
 
         try (Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             String sql = "SELECT COUNT(*) FROM users WHERE username = ?";

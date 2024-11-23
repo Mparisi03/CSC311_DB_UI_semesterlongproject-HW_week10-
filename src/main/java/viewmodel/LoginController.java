@@ -1,5 +1,6 @@
 package viewmodel;
 
+import dao.DbConnectivityClass;
 import javafx.animation.FadeTransition;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
@@ -39,6 +40,8 @@ public class LoginController {
     @FXML
     private TextField usernameTextField;
 
+    private DbConnectivityClass dbConnectivityClass = new DbConnectivityClass();
+
     public void initialize() {
         loginBtn.disableProperty().bind(Bindings.createBooleanBinding(() ->
                 usernameTextField.getText().isEmpty()||
@@ -57,13 +60,47 @@ public class LoginController {
                         null
                 )
         );
+        loginBtn.setOnAction(event -> {
+            String username = usernameTextField.getText();
+            String password = passwordField.getText();
+            if(userExists(username, password)){
+                System.out.println("Login Successful");
+                login(event);
+
+            }
+            else{
+                showAlert("User not found", "The user dosen't exists");
+            }
+        });
 
         rootpane.setOpacity(0);
         FadeTransition fadeOut2 = new FadeTransition(Duration.seconds(10), rootpane);
         fadeOut2.setFromValue(0);
         fadeOut2.setToValue(1);
         fadeOut2.play();
+
+
     }
+
+    private static void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    private boolean userExists(String username,String password) {
+        if (UserSession.checkUserExistsInSession(username)) {
+            return true; // User exists in session
+        }
+        if (dbConnectivityClass.checkUserExists(username)) {
+            return true; // User exists in the database
+        }
+        return false; //return false if not
+    }
+
+
+
 
 
 
