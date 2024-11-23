@@ -36,7 +36,7 @@
                         <MenuItem fx:id="editItem" mnemonicParsing="true" styleClass="menu_items" text="_Edit       Ctrl+E" />
                         <MenuItem fx:id="deleteItem" mnemonicParsing="true" styleClass="menu_items" text="_Delete        Ctrl+D" />
                         <MenuItem fx:id="ClearItem" mnemonicParsing="false" styleClass="menu_items" text="Clea_r        Ctrl+R" />
-                        <MenuItem fx:id="CopyItem" mnemonicParsing="false" styleClass="menu_items" text="_Copy       Ctrl+C" />
+                        <MenuItem fx:id="CopyItem" mnemonicParsing="false" onAction="#handleCopy" styleClass="menu_items" text="_Copy       Ctrl+C" />
                      </items>
                   </Menu>
                         <Menu fx:id="themeMenu" mnemonicParsing="false" styleClass="menu_options" text="Theme">

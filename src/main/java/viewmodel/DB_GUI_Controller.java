@@ -18,6 +18,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -124,6 +126,17 @@ public class DB_GUI_Controller implements Initializable {
         ClearItem.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
         CopyItem.setAccelerator(KeyCombination.keyCombination("Ctrl+C"));
 
+        newItem.setOnAction(event -> addNewRecord());
+        logOut.setOnAction(this::logOut);
+        Import.setOnAction(this::ImportFlie);
+        Export.setOnAction(this::ImportFlie);
+        editItem.setOnAction(event -> editRecord());
+        deleteItem.setOnAction(event -> deleteRecord());
+        ClearItem.setOnAction(event -> clearForm());
+        CopyItem.setOnAction(this::handleCopy);
+
+        menuBar.requestFocus();
+
         try {
             tv_id.setCellValueFactory(new PropertyValueFactory<>("id"));
             tv_fn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
@@ -136,6 +149,7 @@ public class DB_GUI_Controller implements Initializable {
             throw new RuntimeException(e);
         }
     }
+
 
     protected boolean fn_regex(){
         final String regex = "(\\b[a-zA-Z]{2,26})";
@@ -449,6 +463,15 @@ public class DB_GUI_Controller implements Initializable {
         catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    @FXML
+    void handleCopy(ActionEvent event) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString("Text is copy");
+        clipboard.setContent(content);
+        StautsProg.setText("Text is copy to the clipboard");
+
     }
 
 
