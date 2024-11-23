@@ -103,7 +103,6 @@ public class LoginController {
 
 
 
-
     private static BackgroundImage createImage(String url) {
         return new BackgroundImage(
                 new Image(url),
