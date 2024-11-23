@@ -9,15 +9,12 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
+import service.UserSession;
 
 
 public class LoginController {
@@ -44,8 +41,11 @@ public class LoginController {
 
     public void initialize() {
         loginBtn.disableProperty().bind(Bindings.createBooleanBinding(() ->
-                usernameTextField.getText().isEmpty(),
+                usernameTextField.getText().isEmpty()||
+                passwordField.getText().isEmpty(),
+                usernameTextField.textProperty(),
                 passwordField.textProperty()
+
                 ));
 
         rootpane.setBackground(new Background(
@@ -57,6 +57,18 @@ public class LoginController {
                         null
                 )
         );
+        loginBtn.setOnAction(event -> {
+            String username = usernameTextField.getText();
+            String password = passwordField.getText();
+
+            if(userExists(username, password)){
+                System.out.println("Login Successful");
+            }
+            else{
+                showAlert("User not found", "The user dosen't exists");
+            }
+
+        });
 
 
         rootpane.setOpacity(0);
@@ -65,6 +77,21 @@ public class LoginController {
         fadeOut2.setToValue(1);
         fadeOut2.play();
     }
+    private static void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private boolean userExists(String username,String password) {
+        if (UserSession.checkUserExistsInSession(username)) {
+            return true; // User exists in session
+        }
+        return false; //return false if not
+    }
+
     private static BackgroundImage createImage(String url) {
         return new BackgroundImage(
                 new Image(url),
