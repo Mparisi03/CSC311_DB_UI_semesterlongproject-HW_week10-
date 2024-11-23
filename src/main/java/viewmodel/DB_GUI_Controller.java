@@ -124,7 +124,7 @@ public class DB_GUI_Controller implements Initializable {
         editItem.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
         deleteItem.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
         ClearItem.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
-        CopyItem.setAccelerator(KeyCombination.keyCombination("Ctrl+C"));
+        CopyItem.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+C"));
 
         newItem.setOnAction(event -> addNewRecord());
         logOut.setOnAction(this::logOut);
@@ -468,10 +468,26 @@ public class DB_GUI_Controller implements Initializable {
     void handleCopy(ActionEvent event) {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
-        content.putString("Text is copy");
-        clipboard.setContent(content);
-        StautsProg.setText("Text is copy to the clipboard");
+        // Get the selected row from the table
+        Person selected = tv.getSelectionModel().getSelectedItem();
 
+        if(selected != null){
+            // If a row is selected, copy the person's details
+            String copy =   selected.getFirstName() +
+                    selected.getLastName() +
+                    selected.getDepartment() +
+                    selected.getEmail();
+
+            // Set the copied content to the clipboard
+            content.putString(copy);
+            clipboard.setContent(content);
+
+            // Update the status message
+            StautsProg.setText("Selected person details copied to clipboard.");
+        } else {
+            // If no item is selected, update the status message
+            StautsProg.setText("No item selected to copy.");
+        }
     }
 
 
