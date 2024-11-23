@@ -97,7 +97,7 @@
 .table-view .scroll-bar:horizontal .track,
 .table-view .scroll-bar:vertical .track{
 	-fx-background-color: transparent;
-	-fx-border-color:derive( #FFFFFF,80%);
+	-fx-border-color:derive( #ff9c9c,80%);
 
 	-fx-background-radius: 2em;
 	-fx-border-radius:2em;
@@ -106,14 +106,19 @@
 /* The main scrollbar **thumb** CSS class which we drag every time (movable) */
 .table-view .scroll-bar:horizontal .thumb,
 .table-view .scroll-bar:vertical .thumb {
-    -fx-background-color:derive( #FFFFFF,90%);
+    -fx-background-color:derive( #ff9c9c,90%);
 	-fx-background-insets: 1, 0, 0;
 	-fx-background-radius: 2em;
 
 }
+
+#Status{
+    -fx-text-fill: #dbdbdb;
+    -fx-font-size: 30px ;
+}
 /*editing StautsProg text*/
 #StautsProg{
 
-    -fx-text-fill:dbdbdb;
+    -fx-text-fill: #dbdbdb;
 
 }

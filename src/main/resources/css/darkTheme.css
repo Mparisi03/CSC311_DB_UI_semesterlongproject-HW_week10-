@@ -39,26 +39,26 @@
 }
 
 .menu_bar .label{
-    -fx-background-color: black;
+    -fx-background-color: #360505;
     -fx-font-size: 15 pt;
-        -fx-text-fill: white;
+        -fx-text-fill: #ff9c9c;
 }
 
 .menu_options .label{
-    -fx-background-color: black;
-        -fx-text-fill: white;
+    -fx-background-color: #360505;
+        -fx-text-fill: #ff9c9c;
 
 }
 .menu_items{
-    -fx-background-color: black;
+    -fx-background-color: #360505;
 }
 .text_field_pane {
-    -fx-background-color: #424242;
+    -fx-background-color: #21110a;
 }
 
 .text_field {
-    -fx-background-color: black;
-    -fx-text-fill: white;
+    -fx-background-color: white;
+    -fx-text-fill: black;
 }
 .Label {
     -fx-background-color: black;
@@ -79,7 +79,7 @@
 }
 .table-view .column-header,
 .table-view .column-header-background .filler {
-    -fx-background-color:  #6622CC;
+    -fx-background-color:  #ff9c9c;
 }
 .table-view .column-header .label{
    -fx-text-fill: white;
@@ -113,7 +113,7 @@
 .table-view .scroll-bar:horizontal .track,
 .table-view .scroll-bar:vertical .track{
 	-fx-background-color: transparent;
-	-fx-border-color:derive( #6622CC,80%);
+	-fx-border-color:derive( #ff9c9c,80%);
 
 	-fx-background-radius: 2em;
 	-fx-border-radius:2em;
@@ -122,14 +122,19 @@
 /* The main scrollbar **thumb** CSS class which we drag every time (movable) */
 .table-view .scroll-bar:horizontal .thumb,
 .table-view .scroll-bar:vertical .thumb {
-    -fx-background-color:derive( #6622CC,90%);
+    -fx-background-color:derive( #ff9c9c,90%);
 	-fx-background-insets: 2, 0, 0;
 	-fx-background-radius: 2em;
 
 }
+
+#Status{
+    -fx-text-fill:#ff9c9c;
+    -fx-font-size: 30px ;
+}
 /*editing StautsProg text*/
 #StautsProg{
 
-    -fx-text-fill:dbdbdb;
+    -fx-text-fill:#ff9c9c;
 
 }

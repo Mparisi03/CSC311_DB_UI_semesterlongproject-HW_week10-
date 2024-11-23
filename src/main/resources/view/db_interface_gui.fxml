@@ -111,12 +111,12 @@
                                 <Insets left="10.0" right="10.0" top="5.0" />
                             </VBox.margin>
                         </TextField>
-                  <Label prefHeight="18.0" prefWidth="179.0" text="Status:">
+                  <Label fx:id="Status" prefHeight="18.0" prefWidth="179.0" text="Status:">
                      <VBox.margin>
                         <Insets left="10.0" right="10.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <Label fx:id="StautsProg" prefHeight="18.0" prefWidth="180.0">
+                  <Label fx:id="StautsProg" prefHeight="34.0" prefWidth="175.0">
                      <VBox.margin>
                         <Insets left="10.0" right="10.0" top="5.0" />
                      </VBox.margin>

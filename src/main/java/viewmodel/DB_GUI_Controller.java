@@ -49,6 +49,8 @@ public class DB_GUI_Controller implements Initializable {
     @FXML
     private MenuItem ChangePic,ClearItem,CopyItem,editItem,deleteItem,logOut,newItem,Import,Export;
     @FXML
+    private Label Status;
+    @FXML
     private Label StautsProg;
     @FXML
     private ComboBox<sele_major> Major;
