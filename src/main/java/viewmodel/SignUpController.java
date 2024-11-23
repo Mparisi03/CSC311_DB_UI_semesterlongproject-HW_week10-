@@ -47,7 +47,7 @@ public class SignUpController {
         } else {
             // Create a Person object for the new user, if all pass
             Person newUser = new Person(un, "", "", "", un, "");  // Assuming only username and email are needed at signup
-            UserSession session = UserSession.getInstace(un,pass,"N/A");
+            UserSession session = UserSession.getInstace(un, pass, "N/A");
             session.setCurrentUser(newUser);  // Store the user in the session
 
             // Call method to save user data to the database
@@ -91,6 +91,9 @@ public class SignUpController {
     private boolean userExists(String username) {
         if (UserSession.checkUserExistsInSession(username)) {
             return true; // User exists in session
+        }
+        if (dbConnectivityClass.checkUserExists(username)) {
+            return true; // User exists in the database
         }
         return false; //return false if not
     }

@@ -231,6 +231,17 @@ public class DbConnectivityClass {
             lg.makeLog(String.valueOf(id));
             return id;
         }
-        
+    public boolean checkUserExists(String username) {
+        String query = "SELECT * FROM users WHERE username = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // If a record exists, return true
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     }

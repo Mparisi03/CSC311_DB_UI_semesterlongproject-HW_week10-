@@ -16,9 +16,9 @@
     -fx-pref-height: 40px;
     -fx-text-fill: white;
 }
-
+/*#313131*/
 .left_pane {
-    -fx-background-color: #313131;
+    -fx-background-color: #21110a;
     -fx-pref-width: 130px;
     -fx-pref-height: 600px;
         -fx-text-fill: white;
@@ -35,7 +35,7 @@
 
 
 .menu_bar{
-    -fx-background-color: black;
+    -fx-background-color: #360505;
 }
 
 .menu_bar .label{
@@ -125,5 +125,11 @@
     -fx-background-color:derive( #6622CC,90%);
 	-fx-background-insets: 2, 0, 0;
 	-fx-background-radius: 2em;
+
+}
+/*editing StautsProg text*/
+#StautsProg{
+
+    -fx-text-fill:dbdbdb;
 
 }

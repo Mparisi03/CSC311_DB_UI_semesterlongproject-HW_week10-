@@ -57,19 +57,6 @@ public class LoginController {
                         null
                 )
         );
-        loginBtn.setOnAction(event -> {
-            String username = usernameTextField.getText();
-            String password = passwordField.getText();
-
-            if(userExists(username, password)){
-                System.out.println("Login Successful");
-            }
-            else{
-                showAlert("User not found", "The user dosen't exists");
-            }
-
-        });
-
 
         rootpane.setOpacity(0);
         FadeTransition fadeOut2 = new FadeTransition(Duration.seconds(10), rootpane);
@@ -77,20 +64,8 @@ public class LoginController {
         fadeOut2.setToValue(1);
         fadeOut2.play();
     }
-    private static void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
 
-    private boolean userExists(String username,String password) {
-        if (UserSession.checkUserExistsInSession(username)) {
-            return true; // User exists in session
-        }
-        return false; //return false if not
-    }
+
 
     private static BackgroundImage createImage(String url) {
         return new BackgroundImage(
