@@ -18,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -44,7 +45,7 @@ public class DB_GUI_Controller implements Initializable {
     @FXML
     private Button DeleteBtn,addBtn,editBtn;
     @FXML
-    private MenuItem ChangePic,ClearItem,CopyItem,editItem,logOut,newItem,Import,Export;
+    private MenuItem ChangePic,ClearItem,CopyItem,editItem,deleteItem,logOut,newItem,Import,Export;
     @FXML
     private Label StautsProg;
     @FXML
@@ -79,6 +80,25 @@ public class DB_GUI_Controller implements Initializable {
 
         editBtn.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
         DeleteBtn.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+        editItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+        deleteItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+        ClearItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+        CopyItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+
+        newItem.disableProperty().bind(Bindings.createBooleanBinding(() ->
+                        first_name.getText().isEmpty()||
+                                last_name.getText().isEmpty()||
+                                department.getText().isEmpty()||
+                                email.getText().isEmpty()||
+                                !fn_regex()||
+                                !ln_regex()||
+                                !dept_regex()||
+                                email_regex(),
+                first_name.textProperty(),
+                last_name.textProperty(),
+                department.textProperty(),
+                email.textProperty()));
+
 
         addBtn.disableProperty().bind(Bindings.createBooleanBinding(() ->
                 first_name.getText().isEmpty()||
@@ -88,13 +108,21 @@ public class DB_GUI_Controller implements Initializable {
                 !fn_regex()||
                 !ln_regex()||
                 !dept_regex()||
-
                 email_regex(),
                 first_name.textProperty(),
                 last_name.textProperty(),
                 department.textProperty(),
                 email.textProperty()
                 ));
+
+        newItem.setAccelerator(KeyCombination.keyCombination("CTRL+N"));
+        logOut.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
+        Import.setAccelerator(KeyCombination.keyCombination("Ctrl+I"));
+        Export.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
+        editItem.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
+        deleteItem.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
+        ClearItem.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
+        CopyItem.setAccelerator(KeyCombination.keyCombination("Ctrl+C"));
 
         try {
             tv_id.setCellValueFactory(new PropertyValueFactory<>("id"));
