@@ -100,6 +100,7 @@ public class Person {
                 ", department='" + department + '\'' +
                 ", major='" + major + '\'' +
                 ", email='" + email + '\'' +
+                "ImageURL='" + imageURL + '\'' +
                 '}';
     }
 

@@ -74,7 +74,8 @@ public class SignUpController {
             window.setScene(scene);
             window.show();
         } catch (Exception e) {
-            e.printStackTrace();
+            Throwable cause = e.getCause();
+            cause.printStackTrace();
         }
 
     }

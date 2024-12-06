@@ -232,7 +232,7 @@ public class DbConnectivityClass {
             return id;
         }
     public boolean checkUserExists(String username) {
-        String query = "SELECT * FROM users WHERE first_name = ?";
+        String query = "SELECT * FROM users WHERE email = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, username);

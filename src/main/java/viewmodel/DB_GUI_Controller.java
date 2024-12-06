@@ -34,6 +34,7 @@ import java.io.FileReader;
 
 import javax.swing.*;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
@@ -65,22 +66,54 @@ public class DB_GUI_Controller implements Initializable {
     @FXML
     private TableColumn<Person, Integer> tv_id;
 
+
     @FXML
     private TableColumn<Person, String> tv_fn, tv_ln, tv_department, tv_major, tv_email;
     private final DbConnectivityClass cnUtil = new DbConnectivityClass();
     private final ObservableList<Person> data = cnUtil.getData();
 
+
     @FXML
     private ProgressBar progressBar;
+
+
 
 
     public enum sele_major {
         Business, CSC, CPIS
     }
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        tv.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Get the imageURL from the selected Person
+                String imageURL = newValue.getImageURL();
+                if (imageURL != null && !imageURL.isEmpty()) {
+                    // Try to load the image from the URL
+                    try {
+                        URL urlImage = new URL(imageURL);
+                        HttpURLConnection connection = (HttpURLConnection) urlImage.openConnection();
+                        connection.setRequestMethod("GET");
+                        connection.connect();
+                        InputStream inputStream = connection.getInputStream();
+                        Image image = new Image(inputStream);
+                        img_view.setImage(image);
+                    } catch (Exception e) {
+                        // Handle the case where the image can't be loaded
+                        e.printStackTrace();
+                    }
+                } else {
+                    // If no image URL is set, you can set a default image or leave it blank
+                    img_view.setImage(null);
+                }
+            }
+        });
+
+
         Major.setItems(FXCollections.observableArrayList(sele_major.values()));
+
 
         editBtn.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
         DeleteBtn.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
@@ -88,6 +121,7 @@ public class DB_GUI_Controller implements Initializable {
         deleteItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
         ClearItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
         CopyItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+
 
         newItem.disableProperty().bind(Bindings.createBooleanBinding(() ->
                         first_name.getText().isEmpty()||
@@ -103,21 +137,20 @@ public class DB_GUI_Controller implements Initializable {
                 department.textProperty(),
                 email.textProperty()));
 
-
         addBtn.disableProperty().bind(Bindings.createBooleanBinding(() ->
-                first_name.getText().isEmpty()||
-                last_name.getText().isEmpty()||
-                department.getText().isEmpty()||
-                email.getText().isEmpty()||
-                !fn_regex()||
-                !ln_regex()||
-                !dept_regex()||
-                email_regex(),
+                        first_name.getText().isEmpty()||
+                                last_name.getText().isEmpty()||
+                                department.getText().isEmpty()||
+                                email.getText().isEmpty()||
+                                !fn_regex()||
+                                !ln_regex()||
+                                !dept_regex()||
+                                email_regex(),
                 first_name.textProperty(),
                 last_name.textProperty(),
                 department.textProperty(),
                 email.textProperty()
-                ));
+        ));
 
         newItem.setAccelerator(KeyCombination.keyCombination("CTRL+N"));
         logOut.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
@@ -128,6 +161,7 @@ public class DB_GUI_Controller implements Initializable {
         ClearItem.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
         CopyItem.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+C"));
 
+
         newItem.setOnAction(event -> addNewRecord());
         logOut.setOnAction(this::logOut);
         Import.setOnAction(this::ImportFlie);
@@ -136,7 +170,6 @@ public class DB_GUI_Controller implements Initializable {
         deleteItem.setOnAction(event -> deleteRecord());
         ClearItem.setOnAction(event -> clearForm());
         CopyItem.setOnAction(this::handleCopy);
-
         menuBar.requestFocus();
 
         try {
@@ -151,7 +184,6 @@ public class DB_GUI_Controller implements Initializable {
             throw new RuntimeException(e);
         }
     }
-
 
     protected boolean fn_regex(){
         final String regex = "(\\b[a-zA-Z]{2,26})";
@@ -170,34 +202,40 @@ public class DB_GUI_Controller implements Initializable {
         return checker(email.getText(), regex);
     }
 
-   protected boolean checker(String string, String regex){
-       Pattern pattern = Pattern.compile(regex);
-       Matcher matcher = pattern.matcher(string);
-       return matcher.matches();
 
-   }
+    protected boolean checker(String string, String regex){
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(string);
+        return matcher.matches();
 
-   protected boolean isVaild(){
+
+    }
+
+
+    protected boolean isVaild(){
         return !first_name.getText().isEmpty() &&
                 !last_name.getText().isEmpty() &&
                 !department.getText().isEmpty() &&
                 !email.getText().isEmpty();
-   }
+    }
 
-   private void configMenu(){
-      ChangePic.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
-      ClearItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
-      CopyItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
-      editItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
-      logOut.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
-      newItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
-   }
+
+    private void configMenu(){
+        ChangePic.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+        ClearItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+        CopyItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+        editItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+        logOut.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+        newItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+    }
+
 
     @FXML
     protected void addNewRecord() {
         if(!isVaild()){
             StautsProg.setText("Plase fill out all flieds propley");
         }else {
+
 
             Person p = new Person(first_name.getText(), last_name.getText(), department.getText(),
                     Major.getValue().toString(), email.getText(), imageURL.getText());
@@ -207,10 +245,13 @@ public class DB_GUI_Controller implements Initializable {
             data.add(p);
             clearForm();
 
+
             StautsProg.setText("A new user was inserted successfully.");
         }
 
+
     }
+
 
     @FXML
     protected void clearForm() {
@@ -222,6 +263,7 @@ public class DB_GUI_Controller implements Initializable {
         imageURL.setText("");
         StautsProg.setText("A user was clear successfully.");
     }
+
 
     @FXML
     protected void logOut(ActionEvent actionEvent) {
@@ -237,10 +279,12 @@ public class DB_GUI_Controller implements Initializable {
         }
     }
 
+
     @FXML
     protected void closeApplication() {
         System.exit(0);
     }
+
 
     @FXML
     protected void displayAbout() {
@@ -255,10 +299,12 @@ public class DB_GUI_Controller implements Initializable {
         }
     }
 
+
     @FXML
     protected void editRecord() {
         Person p = tv.getSelectionModel().getSelectedItem();
         int index = data.indexOf(p);
+
 
         String major = Major.getValue().toString();
         Person p2 = new Person(index + 1, first_name.getText(), last_name.getText(), department.getText(),
@@ -270,6 +316,7 @@ public class DB_GUI_Controller implements Initializable {
         StautsProg.setText("A user was edited successfully.");
     }
 
+
     @FXML
     protected void deleteRecord() {
         Person p = tv.getSelectionModel().getSelectedItem();
@@ -279,6 +326,7 @@ public class DB_GUI_Controller implements Initializable {
         tv.getSelectionModel().select(index);
         StautsProg.setText("A user was deleted successfully.");
     }
+
 
     @FXML
     protected void showImage() {
@@ -291,33 +339,60 @@ public class DB_GUI_Controller implements Initializable {
         new Thread(uploadTask).start();
     }
 
+
     @FXML
     protected void addRecord() {
         showSomeone();
     }
 
+
     @FXML
     protected void selectedItemTV(MouseEvent mouseEvent) {
         Person p = tv.getSelectionModel().getSelectedItem();
 
-        first_name.setText(p.getFirstName());
-        last_name.setText(p.getLastName());
-        department.setText(p.getDepartment());
 
-        // Ensure that p.getMajor() returns a string
-        String majorString = p.getMajor();  // Assuming p.getMajor() returns a String
 
-        // Map the string value to the corresponding Major enum
-        sele_major majorEnum = mapStringToMajor(majorString);
 
-        // Set the ComboBox value
-        Major.setValue(majorEnum);
+        if(p != null) {
+            first_name.setText(p.getFirstName());
+            last_name.setText(p.getLastName());
+            department.setText(p.getDepartment());
 
-        email.setText(p.getEmail());
-        imageURL.setText(p.getImageURL());
+
+            // Ensure that p.getMajor() returns a string
+            String majorString = p.getMajor();  // Assuming p.getMajor() returns a String
+
+
+            // Map the string value to the corresponding Major enum
+            sele_major majorEnum = mapStringToMajor(majorString);
+
+
+            // Set the ComboBox value
+            Major.setValue(majorEnum);
+
+
+            email.setText(p.getEmail());
+            imageURL.setText(p.getImageURL());
+        }
     }
 
+
+    private  void updateProfile(String imageUrl){
+        if(imageUrl != null && !imageUrl.isEmpty()){
+            try{
+                img_view.setImage(new Image(imageUrl));
+            }catch (Exception e){
+                e.printStackTrace();
+
+
+                img_view.setImage(new Image(getClass().getResourceAsStream(imageUrl).toString()));
+            }
+        }
+    }
+
+
     private sele_major mapStringToMajor(String majorString) {
+
 
         switch (majorString) {
             case "CSC":
@@ -327,10 +402,12 @@ public class DB_GUI_Controller implements Initializable {
             case "Business":
                 return sele_major.Business;
 
+
             default:
                 return null; // Or handle the default case as needed
         }
     }
+
 
     public void lightTheme(ActionEvent actionEvent) {
         try {
@@ -342,10 +419,12 @@ public class DB_GUI_Controller implements Initializable {
             stage.show();
             System.out.println("light " + scene.getStylesheets());
 
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     public void darkTheme(ActionEvent actionEvent) {
         try {
@@ -357,6 +436,7 @@ public class DB_GUI_Controller implements Initializable {
             e.printStackTrace();
         }
     }
+
 
     public void showSomeone() {
         Dialog<Results> dialog = new Dialog<>();
@@ -386,13 +466,17 @@ public class DB_GUI_Controller implements Initializable {
         });
     }
 
-   // private static enum Major {Business, CSC, CPIS}
+
+    // private static enum Major {Business, CSC, CPIS}
+
 
     private static class Results {
+
 
         String fname;
         String lname;
         sele_major major;
+
 
         public Results(String name, String date, sele_major venue) {
             this.fname = name;
@@ -401,13 +485,16 @@ public class DB_GUI_Controller implements Initializable {
         }
     }
 
+
     @FXML
     void ExportFile(ActionEvent event) {
+
 
         if(event.getSource()==Export){
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Save CVS file");
             int response = fileChooser.showOpenDialog(null);
+
 
             if(response == JFileChooser.APPROVE_OPTION){
                 File file = new File(fileChooser.getSelectedFile().getAbsolutePath() +".cvs");
@@ -418,13 +505,16 @@ public class DB_GUI_Controller implements Initializable {
         }
     }
 
+
     @FXML
     void ImportFlie(ActionEvent event) {
+
 
         if(event.getSource()==Import) {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Choose CVS file");
             int response = fileChooser.showOpenDialog(null); // select file to open
+
 
             if(response == JFileChooser.APPROVE_OPTION) {
                 File file = new File(fileChooser.getSelectedFile().getAbsolutePath()+ ".cvs");
@@ -436,6 +526,7 @@ public class DB_GUI_Controller implements Initializable {
         }
     }
 
+
     public void ImportCVS(File file)  {
         try(BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
@@ -443,7 +534,9 @@ public class DB_GUI_Controller implements Initializable {
                 String[] split = line.split(",");
                 System.out.println("Read file" + String.join(",", split));
 
+
             }
+
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -455,12 +548,14 @@ public class DB_GUI_Controller implements Initializable {
                     "Major, Department");
             wr.newLine();
 
+
             for(Person person : data){
                 wr.write(person.getFirstName() + ", "+ person.getLastName()+ ", "+ person.getDepartment()+ ", "+
                         person.getMajor()+ ", "+ person.getEmail());
                 wr.newLine();
             }
-            }
+        }
+
 
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -473,6 +568,7 @@ public class DB_GUI_Controller implements Initializable {
         // Get the selected row from the table
         Person selected = tv.getSelectionModel().getSelectedItem();
 
+
         if(selected != null){
             // If a row is selected, copy the person's details
             String copy =   selected.getFirstName() +
@@ -480,9 +576,11 @@ public class DB_GUI_Controller implements Initializable {
                     selected.getDepartment() +
                     selected.getEmail();
 
+
             // Set the copied content to the clipboard
             content.putString(copy);
             clipboard.setContent(content);
+
 
             // Update the status message
             StautsProg.setText("Selected person details copied to clipboard.");
@@ -493,6 +591,8 @@ public class DB_GUI_Controller implements Initializable {
     }
 
 
+
+
     private Task<Void> createUploadTask(File file, ProgressBar progressBar) {
         return new Task<>() {
             @Override
@@ -501,15 +601,19 @@ public class DB_GUI_Controller implements Initializable {
                 long fileSize = Files.size(file.toPath());
                 long uploadedBytes = 0;
 
+
                 try (FileInputStream fileInputStream = new FileInputStream(file);
                      OutputStream blobOutputStream = blobClient.getBlockBlobClient().getBlobOutputStream()) {
+
 
                     byte[] buffer = new byte[1024 * 1024]; // 1 MB buffer size
                     int bytesRead;
 
+
                     while ((bytesRead = fileInputStream.read(buffer)) != -1) {
                         blobOutputStream.write(buffer, 0, bytesRead);
                         uploadedBytes += bytesRead;
+
 
                         // Calculate and update progress as a percentage
                         int progress = (int) ((double) uploadedBytes / fileSize * 100);
@@ -517,9 +621,11 @@ public class DB_GUI_Controller implements Initializable {
                     }
                 }
 
+
                 return null;
             }
         };
     }
+
 
 }
