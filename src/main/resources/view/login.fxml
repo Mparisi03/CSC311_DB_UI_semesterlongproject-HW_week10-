@@ -63,7 +63,7 @@
         </VBox>
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="6" />
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="4" />
-          <Label id="emailLabel" fx:id="usernameLabel" alignment="TOP_CENTER" contentDisplay="TOP" focusTraversable="false" prefHeight="23.0" prefWidth="156.0" styleClass="login_label" text="Username" textAlignment="RIGHT" textFill="#ff9c9c" GridPane.rowIndex="3">
+          <Label id="emailLabel" fx:id="usernameLabel" alignment="TOP_CENTER" contentDisplay="TOP" focusTraversable="false" prefHeight="23.0" prefWidth="156.0" styleClass="login_label" text="Email" textAlignment="RIGHT" textFill="#ff9c9c" GridPane.rowIndex="3">
               <font>
                   <Font name="System Bold" size="18.0" />
               </font>

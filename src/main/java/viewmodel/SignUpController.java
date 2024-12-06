@@ -25,24 +25,31 @@ public class SignUpController {
 
     @FXML
     private TextField password;
+    @FXML
+    private TextField Last_name;
 
     @FXML
-    private TextField username;
+    private TextField first_name;
+
+    @FXML
+    private TextField Email;
 
     private DbConnectivityClass dbConnectivityClass = new DbConnectivityClass();
 
     public void createNewAccount(ActionEvent actionEvent) {
-        String un = this.username.getText();
+        String em = this.Email.getText();
+        String fn = this.first_name.getText();
+        String ln = this.Last_name.getText();
         String confirmPass = this.confirm_password.getText();
         String pass = this.password.getText();
 
          //checks if empty
-        if (un.isEmpty() || confirmPass.isEmpty() || pass.isEmpty()) {
+        if (em.isEmpty()|| fn.isEmpty()||ln.isEmpty() || confirmPass.isEmpty() || pass.isEmpty()) {
             showAlert("Empty", "Username/password can't be empty");
             //check if password and confirmPass are the same
         } else if (!pass.equals(confirmPass)) {
             showAlert("Mismatch", "Passwords do not match");
-        } if (userExists(un)) {
+        } if (userExists(em)) {
             showAlert("Exists", "Username already exists");
             return; // Return early if user already exists
         } else {
@@ -50,12 +57,12 @@ public class SignUpController {
 
 
             // Create a Person object for the new user, if all pass
-            Person newUser = new Person(un, "", "", "", un, "");  // Assuming only username and email are needed at signup
-            UserSession session = UserSession.getInstace(un, pass, "N/A");
+            Person newUser = new Person(fn, ln, "", "", em, "");  // Assuming only username and email are needed at signup
+            UserSession session = UserSession.getInstace(fn, ln, "N/A");
             session.setCurrentUser(newUser);  // Store the user in the session
 
             // Call method to save user data to the database
-            saveUserToDatabase(un, pass);
+            saveUserToDatabase(em,pass,fn,ln);
 
             // Show success message
             showAlert("Success", "New account created");
@@ -102,9 +109,9 @@ public class SignUpController {
         return false; //return false if not
     }
 
-    private void saveUserToDatabase(String username, String password) {
+    private void saveUserToDatabase(String username, String password,String first_name,String last_name) {
         // Create a new Person object with the user data
-        Person newUser = new Person(0, username, password, "default_department", "default_major", username + "@example.com", "");
+        Person newUser = new Person(0, first_name, last_name, "default_department", "default_major", username, "");
         // Save to the database
         dbConnectivityClass.insertUser(newUser);
     }
