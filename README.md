@@ -30,7 +30,7 @@ Manage User Profiles
 Admin can edit the user profiles, setting up relevant information for each user in the system.
 
 
-#Feature
+# Feature
 Sign up/Log in features 
 interactive database
 Import and Export CVS files
