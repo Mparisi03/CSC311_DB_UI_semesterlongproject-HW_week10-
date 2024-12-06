@@ -32,7 +32,10 @@ Admin can edit the user profiles, setting up relevant information for each user 
 
 # Feature
 Sign up/Log in features 
+
 interactive database
+
 Import and Export CVS files
+
 Custioms users profiles.
 
