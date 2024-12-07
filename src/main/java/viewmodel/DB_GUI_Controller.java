@@ -318,6 +318,21 @@ public class DB_GUI_Controller implements Initializable {
         }
     }
 
+    @FXML
+    void displayHistory(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/view/Help.fxml"));
+            Stage stage = new Stage();
+            Scene scene = new Scene(root, 600, 500);
+            stage.setScene(scene);
+            stage.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 
     @FXML
     protected void editRecord() {
