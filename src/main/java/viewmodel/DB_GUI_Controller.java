@@ -35,6 +35,7 @@ import java.io.FileReader;
 import javax.swing.*;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
@@ -90,15 +91,17 @@ public class DB_GUI_Controller implements Initializable {
             if (newValue != null) {
                 // Get the imageURL from the selected Person
                 String imageURL = newValue.getImageURL();
+
+                // If imageURL is valid (not null or empty), attempt to load the image
                 if (imageURL != null && !imageURL.isEmpty()) {
-                    // Try to load the image from the URL
                     try {
+                        // Create a URL object from the image URL string
                         URL urlImage = new URL(imageURL);
                         HttpURLConnection connection = (HttpURLConnection) urlImage.openConnection();
                         connection.setRequestMethod("GET");
                         connection.connect();
 
-                        // Check if the connection was successful
+                        // Check if the connection was successful (HTTP 200)
                         int responseCode = connection.getResponseCode();
                         if (responseCode == HttpURLConnection.HTTP_OK) {
                             try (InputStream inputStream = connection.getInputStream()) {
@@ -106,18 +109,23 @@ public class DB_GUI_Controller implements Initializable {
                                 img_view.setImage(image);
                             }
                         } else {
-                            // Handle non-200 HTTP responses
+                            // Handle unsuccessful responses and set default image
                             System.err.println("Failed to load image, response code: " + responseCode);
                             setDefaultImage(img_view);
                         }
+                    } catch (MalformedURLException e) {
+                        // Handle malformed URL errors
+                        System.err.println("Invalid URL format: " + imageURL);
+                        setDefaultImage(img_view);
+                    } catch (IOException e) {
+                        // Handle IO errors such as network failure
+                        System.err.println("Error connecting to image URL: " + e.getMessage());
+                        setDefaultImage(img_view);
                     } catch (Exception e) {
-                        // Handle the case where the image can't be loaded
-                        e.printStackTrace();
+                        // Catch any unexpected errors
+                        System.err.println("Unexpected error: " + e.getMessage());
                         setDefaultImage(img_view);
                     }
-                } else {
-                    // If no image URL is set, set a default image or clear the current image
-                    setDefaultImage(img_view);
                 }
             }
         });
@@ -200,7 +208,7 @@ public class DB_GUI_Controller implements Initializable {
     }
     // Helper method to set a default image
     private void setDefaultImage(ImageView img_view) {
-        img_view.setImage(new Image("images/profile.png"));
+        img_view.setImage(new Image("/src/main/resources/images/profile.png"));
     }
 
 
