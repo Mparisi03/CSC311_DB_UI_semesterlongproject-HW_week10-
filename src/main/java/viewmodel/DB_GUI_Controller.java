@@ -90,45 +90,58 @@ public class DB_GUI_Controller implements Initializable {
         tv.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 // Get the imageURL from the selected Person
-                String imageURL = newValue.getImageURL();
+                String selectedImageURL = newValue.getImageURL();
 
-                // If imageURL is valid (not null or empty), attempt to load the image
-                if (imageURL != null && !imageURL.isEmpty()) {
+                // Check if selectedImageURL is not null or empty
+                if (selectedImageURL != null && !selectedImageURL.isEmpty()) {
                     try {
-                        // Create a URL object from the image URL string
-                        URL urlImage = new URL(imageURL);
-                        HttpURLConnection connection = (HttpURLConnection) urlImage.openConnection();
-                        connection.setRequestMethod("GET");
-                        connection.connect();
-
-                        // Check if the connection was successful (HTTP 200)
-                        int responseCode = connection.getResponseCode();
-                        if (responseCode == HttpURLConnection.HTTP_OK) {
-                            try (InputStream inputStream = connection.getInputStream()) {
-                                Image image = new Image(inputStream);
+                        // If the image URL is a file path (starting with "file:/"), load it properly
+                        if (selectedImageURL.startsWith("file:/")) {
+                            File file = new File(selectedImageURL.substring(5)); // Remove "file:/" prefix
+                            if (file.exists()) {
+                                // Load the image from the file system
+                                Image image = new Image(file.toURI().toString());
                                 img_view.setImage(image);
+                            } else {
+                                System.err.println("File not found: " + selectedImageURL);
+                                setDefaultImage(img_view);
                             }
                         } else {
-                            // Handle unsuccessful responses and set default image
-                            System.err.println("Failed to load image, response code: " + responseCode);
-                            setDefaultImage(img_view);
+                            // Handle other URL schemes like http:// or https://
+                            URL urlImage = new URL(selectedImageURL);
+                            HttpURLConnection connection = (HttpURLConnection) urlImage.openConnection();
+                            connection.setRequestMethod("GET");
+                            connection.connect();
+
+                            // Check if the connection was successful (HTTP 200)
+                            int responseCode = connection.getResponseCode();
+                            if (responseCode == HttpURLConnection.HTTP_OK) {
+                                try (InputStream inputStream = connection.getInputStream()) {
+                                    Image image = new Image(inputStream);
+                                    img_view.setImage(image);
+                                }
+                            } else {
+                                System.err.println("Failed to load image, response code: " + responseCode);
+                                setDefaultImage(img_view);
+                            }
                         }
                     } catch (MalformedURLException e) {
-                        // Handle malformed URL errors
-                        System.err.println("Invalid URL format: " + imageURL);
+                        System.err.println("Invalid URL format: " + selectedImageURL);
                         setDefaultImage(img_view);
                     } catch (IOException e) {
-                        // Handle IO errors such as network failure
                         System.err.println("Error connecting to image URL: " + e.getMessage());
                         setDefaultImage(img_view);
                     } catch (Exception e) {
-                        // Catch any unexpected errors
                         System.err.println("Unexpected error: " + e.getMessage());
                         setDefaultImage(img_view);
                     }
+                } else {
+                    // Handle the case where selectedImageURL is empty or null
+                    setDefaultImage(img_view);
                 }
             }
         });
+
 
 
 

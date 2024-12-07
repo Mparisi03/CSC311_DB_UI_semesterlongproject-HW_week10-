@@ -10,6 +10,7 @@ public class StorageUploader {
 
     public StorageUploader( ) {
         this.containerClient = new BlobContainerClientBuilder()
+
                 .containerName("media-files")
                 .buildClient();
     }
