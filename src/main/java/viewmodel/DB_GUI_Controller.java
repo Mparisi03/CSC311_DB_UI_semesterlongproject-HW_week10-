@@ -95,19 +95,25 @@ public class DB_GUI_Controller implements Initializable {
                 // Check if selectedImageURL is not null or empty
                 if (selectedImageURL != null && !selectedImageURL.isEmpty()) {
                     try {
-                        // If the image URL is a file path (starting with "file:/"), load it properly
+                        // Handle file URLs
                         if (selectedImageURL.startsWith("file:/")) {
+                            // Remove the "file:/" prefix and load the image from the file system
                             File file = new File(selectedImageURL.substring(5)); // Remove "file:/" prefix
                             if (file.exists()) {
                                 // Load the image from the file system
                                 Image image = new Image(file.toURI().toString());
                                 img_view.setImage(image);
+                                System.out.println("Image loaded from file: " + selectedImageURL);
                             } else {
                                 System.err.println("File not found: " + selectedImageURL);
                                 setDefaultImage(img_view);
                             }
-                        } else {
-                            // Handle other URL schemes like http:// or https://
+                        }
+                        // Handle HTTP(S) URLs
+                        else if (selectedImageURL.startsWith("https://") || selectedImageURL.startsWith("https://")) {
+                            System.out.println("Attempting to load image from URL: " + selectedImageURL);
+
+                            // For HTTP(S) URLs, open a connection and attempt to fetch the image
                             URL urlImage = new URL(selectedImageURL);
                             HttpURLConnection connection = (HttpURLConnection) urlImage.openConnection();
                             connection.setRequestMethod("GET");
@@ -116,6 +122,7 @@ public class DB_GUI_Controller implements Initializable {
                             // Check if the connection was successful (HTTP 200)
                             int responseCode = connection.getResponseCode();
                             if (responseCode == HttpURLConnection.HTTP_OK) {
+                                System.out.println("Connection successful, loading image.");
                                 try (InputStream inputStream = connection.getInputStream()) {
                                     Image image = new Image(inputStream);
                                     img_view.setImage(image);
@@ -124,6 +131,11 @@ public class DB_GUI_Controller implements Initializable {
                                 System.err.println("Failed to load image, response code: " + responseCode);
                                 setDefaultImage(img_view);
                             }
+                        }
+                        // Handle other URL types, or fallback to default behavior
+                        else {
+                            System.err.println("Unsupported image URL format: " + selectedImageURL);
+                            setDefaultImage(img_view);
                         }
                     } catch (MalformedURLException e) {
                         System.err.println("Invalid URL format: " + selectedImageURL);
@@ -137,14 +149,11 @@ public class DB_GUI_Controller implements Initializable {
                     }
                 } else {
                     // Handle the case where selectedImageURL is empty or null
-                    setDefaultImage(img_view);
+                    System.err.println("Image URL is empty or null.");
+                    //setDefaultImage(img_view);
                 }
             }
         });
-
-
-
-
 
         Major.setItems(FXCollections.observableArrayList(sele_major.values()));
 
