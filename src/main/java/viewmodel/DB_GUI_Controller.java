@@ -97,19 +97,32 @@ public class DB_GUI_Controller implements Initializable {
                         HttpURLConnection connection = (HttpURLConnection) urlImage.openConnection();
                         connection.setRequestMethod("GET");
                         connection.connect();
-                        InputStream inputStream = connection.getInputStream();
-                        Image image = new Image(inputStream);
-                        img_view.setImage(image);
+
+                        // Check if the connection was successful
+                        int responseCode = connection.getResponseCode();
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            try (InputStream inputStream = connection.getInputStream()) {
+                                Image image = new Image(inputStream);
+                                img_view.setImage(image);
+                            }
+                        } else {
+                            // Handle non-200 HTTP responses
+                            System.err.println("Failed to load image, response code: " + responseCode);
+                            setDefaultImage(img_view);
+                        }
                     } catch (Exception e) {
                         // Handle the case where the image can't be loaded
                         e.printStackTrace();
+                        setDefaultImage(img_view);
                     }
                 } else {
-                    // If no image URL is set, you can set a default image or leave it blank
-                    img_view.setImage(null);
+                    // If no image URL is set, set a default image or clear the current image
+                    setDefaultImage(img_view);
                 }
             }
         });
+
+
 
 
         Major.setItems(FXCollections.observableArrayList(sele_major.values()));
@@ -121,6 +134,7 @@ public class DB_GUI_Controller implements Initializable {
         deleteItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
         ClearItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
         CopyItem.disableProperty().bind(Bindings.isEmpty(tv.getSelectionModel().getSelectedItems()));
+
 
 
         newItem.disableProperty().bind(Bindings.createBooleanBinding(() ->
@@ -184,6 +198,11 @@ public class DB_GUI_Controller implements Initializable {
             throw new RuntimeException(e);
         }
     }
+    // Helper method to set a default image
+    private void setDefaultImage(ImageView img_view) {
+        img_view.setImage(new Image("images/profile.png"));
+    }
+
 
     protected boolean fn_regex(){
         final String regex = "(\\b[a-zA-Z]{2,26})";
@@ -330,14 +349,32 @@ public class DB_GUI_Controller implements Initializable {
 
     @FXML
     protected void showImage() {
-        File file = (new FileChooser()).showOpenDialog(img_view.getScene().getWindow());
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+        File file = fileChooser.showOpenDialog(img_view.getScene().getWindow());
         if (file != null) {
-            img_view.setImage(new Image(file.toURI().toString()));
+            String imageUrl = file.toURI().toString();
+            img_view.setImage(new Image(imageUrl));
+
+            // Update the Person record or field where the image is stored
+            Person selectedPerson = tv.getSelectionModel().getSelectedItem();
+            if (selectedPerson != null) {
+                selectedPerson.setImageURL(imageUrl);
+                cnUtil.updateImageURL(selectedPerson.getId(), imageUrl); // Ensure this method exists
+                StautsProg.setText("Image updated successfully.");
+            } else {
+                StautsProg.setText("No user selected to update the image.");
+            }
+
+            // Optionally upload the file
+            Task<Void> uploadTask = createUploadTask(file, progressBar);
+            progressBar.progressProperty().bind(uploadTask.progressProperty());
+            new Thread(uploadTask).start();
+        } else {
+            StautsProg.setText("No file selected.");
         }
-        Task<Void> uploadTask = createUploadTask(file, progressBar);
-        progressBar.progressProperty().bind(uploadTask.progressProperty());
-        new Thread(uploadTask).start();
     }
+
 
 
     @FXML

@@ -6,6 +6,9 @@ import model.Person;
 import service.MyLogger;
 
 import java.sql.*;
+
+import static java.sql.DriverManager.getConnection;
+
 public class DbConnectivityClass {
     final static String DB_NAME="CSC311_BD_TEMP";
         MyLogger lg= new MyLogger();
@@ -23,7 +26,7 @@ public class DbConnectivityClass {
         public ObservableList<Person> getData() {
             connectToDatabase();
             try {
-                Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                Connection conn = getConnection(DB_URL, USERNAME, PASSWORD);
                 String sql = "SELECT * FROM users ";
                 PreparedStatement preparedStatement = conn.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery();
@@ -56,14 +59,14 @@ public class DbConnectivityClass {
                 Class.forName("com.mysql.cj.jdbc.Driver");
 
                 //First, connect to MYSQL server and create the database if not created
-                Connection conn = DriverManager.getConnection(SQL_SERVER_URL, USERNAME, PASSWORD);
+                Connection conn = getConnection(SQL_SERVER_URL, USERNAME, PASSWORD);
                 Statement statement = conn.createStatement();
                 statement.executeUpdate("CREATE DATABASE IF NOT EXISTS "+DB_NAME+"");
                 statement.close();
                 conn.close();
 
                 //Second, connect to the database and create the table "users" if cot created
-                conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                conn = getConnection(DB_URL, USERNAME, PASSWORD);
                 statement = conn.createStatement();
                 String sql = "CREATE TABLE IF NOT EXISTS users (" + "id INT( 10 ) NOT NULL PRIMARY KEY AUTO_INCREMENT,"
                         + "first_name VARCHAR(200) NOT NULL," + "last_name VARCHAR(200) NOT NULL,"
@@ -97,7 +100,7 @@ public class DbConnectivityClass {
         public void queryUserByLastName(String name) {
             connectToDatabase();
             try {
-                Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                Connection conn = getConnection(DB_URL, USERNAME, PASSWORD);
                 String sql = "SELECT * FROM users WHERE last_name = ?";
                 PreparedStatement preparedStatement = conn.prepareStatement(sql);
                 preparedStatement.setString(1, name);
@@ -124,7 +127,7 @@ public class DbConnectivityClass {
         public void listAllUsers() {
             connectToDatabase();
             try {
-                Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                Connection conn = getConnection(DB_URL, USERNAME, PASSWORD);
                 String sql = "SELECT * FROM users ";
                 PreparedStatement preparedStatement = conn.prepareStatement(sql);
 
@@ -160,7 +163,7 @@ public class DbConnectivityClass {
                 preparedStatement.setString(3, person.getDepartment());
                 preparedStatement.setString(4, person.getMajor());
                 preparedStatement.setString(5, person.getEmail());
-                preparedStatement.setString(6, person.getImageURL());
+                preparedStatement.setString(6, person.getImageURL()); // Ensure this value is correctly passed
                 int row = preparedStatement.executeUpdate();
                 if (row > 0) {
                     lg.makeLog("A new user was inserted successfully.");
@@ -172,32 +175,32 @@ public class DbConnectivityClass {
             }
         }
 
-        public void editUser(int id, Person p) {
-            connectToDatabase();
-            try {
-                Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-                String sql = "UPDATE users SET first_name=?, last_name=?, department=?, major=?, email=?, imageURL=? WHERE id=?";
-                PreparedStatement preparedStatement = conn.prepareStatement(sql);
-                preparedStatement.setString(1, p.getFirstName());
-                preparedStatement.setString(2, p.getLastName());
-                preparedStatement.setString(3, p.getDepartment());
-                preparedStatement.setString(4, p.getMajor());
-                preparedStatement.setString(5, p.getEmail());
-                preparedStatement.setString(6, p.getImageURL());
-                preparedStatement.setInt(7, id);
-                preparedStatement.executeUpdate();
-                preparedStatement.close();
-                conn.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+    public void editUser(int id, Person p) {
+        connectToDatabase();
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+            String sql = "UPDATE users SET first_name=?, last_name=?, department=?, major=?, email=?, imageURL=? WHERE id=?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, p.getFirstName());
+            preparedStatement.setString(2, p.getLastName());
+            preparedStatement.setString(3, p.getDepartment());
+            preparedStatement.setString(4, p.getMajor());
+            preparedStatement.setString(5, p.getEmail());
+            preparedStatement.setString(6, p.getImageURL()); // Ensure this value is correctly updated
+            preparedStatement.setInt(7, id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            conn.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         }
 
         public void deleteRecord(Person person) {
             int id = person.getId();
             connectToDatabase();
             try {
-                Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                Connection conn = getConnection(DB_URL, USERNAME, PASSWORD);
                 String sql = "DELETE FROM users WHERE id=?";
                 PreparedStatement preparedStatement = conn.prepareStatement(sql);
                 preparedStatement.setInt(1, id);
@@ -214,7 +217,7 @@ public class DbConnectivityClass {
             connectToDatabase();
             int id;
             try {
-                Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                Connection conn = getConnection(DB_URL, USERNAME, PASSWORD);
                 String sql = "SELECT id FROM users WHERE email=?";
                 PreparedStatement preparedStatement = conn.prepareStatement(sql);
                 preparedStatement.setString(1, p.getEmail());
@@ -233,7 +236,7 @@ public class DbConnectivityClass {
         }
     public boolean checkUserExists(String username) {
         String query = "SELECT * FROM users WHERE email = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+        try (Connection conn = getConnection(DB_URL, USERNAME, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -241,6 +244,26 @@ public class DbConnectivityClass {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public void updateImageURL(int userId, String imageUrl) {
+        String sql = "UPDATE users SET image_url = ? WHERE id = ?";
+
+        try (Connection connection = getConnection(DB_URL, USERNAME, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, imageUrl);
+            preparedStatement.setInt(2, userId);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("Image URL updated successfully for user ID: " + userId);
+            } else {
+                System.out.println("No user found with ID: " + userId);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error updating image URL: " + e.getMessage());
         }
     }
 
